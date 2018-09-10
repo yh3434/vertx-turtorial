@@ -1,0 +1,16 @@
+# Created by .ignore support plugin (hsz.mobi)
+target/
+logs/
+out/
+.vertx/
+file-uploads/
+.DS_Store
+.idea/
+*.log
+classes/
+*.iws
+*.iml
+*.ipr
+!.mvn/wrapper/maven-wrapper.jar
+_book/
+client.log*
