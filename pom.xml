@@ -10,6 +10,7 @@
     <version>1.0-SNAPSHOT</version>
     <modules>
         <module>vertx-hello</module>
+        <module>vertx-thread-model</module>
     </modules>
 
     <properties>
