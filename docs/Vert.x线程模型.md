@@ -32,7 +32,7 @@ public class HelloVertx extends AbstractVerticle {
 }
 ```
 
-点击main函数启动后，打开浏览器输入：http://localhost:8080 ，我们可以看到当sleep超过2000ms时，控制台开始有下面的警告输出：
+点击main函数启动后，打开浏览器输入：http://localhost:8080，我们可以看到当sleep超过2000ms时，控制台开始有下面的警告输出：
 
 ```shell
 vert.x-eventloop-thread-0
@@ -40,7 +40,7 @@ May 11, 2018 9:54:57 PM io.vertx.core.impl.BlockedThreadChecker
 WARNING: Thread Thread[vert.x-eventloop-thread-0,5,main] has been blocked for 2272 ms, time limit is 2000
 vert.x-eventloop-thread-0
 vert.x-eventloop-thread-0
-May 11, 2018 9:55:03 PM io.vertx.core.impl.BlockedThreadChecker
+May 11, 2018 9:55:02 PM io.vertx.core.impl.BlockedThreadChecker
 WARNING: Thread Thread[vert.x-eventloop-thread-0,5,main] has been blocked for 2262 ms, time limit is 2000
 vert.x-eventloop-thread-0
 vert.x-eventloop-thread-0
@@ -77,9 +77,30 @@ vert.x-eventloop-thread-0
 
 2. 优雅的实现线程安全，无需加锁、同步之类的代码，因为总是线程安全的。
 
-​	但是这样的设计不是银弹，同时也会带来一些比如异步代码回调嵌套回调等问题，后面的文章会一一举例vert.x怎么解决这些问题。
+	但是这样的设计不是银弹，同时也会带来一些比如异步代码回调嵌套回调等问题，后面的文章会一一举例vert.x怎么解决这些问题。
 
 # 验证假设
 
 以上都是通过代码的结果推论出来的，下面我们看看Vert.x的实现。
 
+## Event Loop线程
+
+![eventloop](https://ws1.sinaimg.cn/large/0069RVTdgy1fv76ao8vhyj31kw0vsaed.jpg)
+
+我们可以上面的例子中看到handler的线程名为：vert.x-eventloop-thread-0 这种格式的，这种就是event-loop线程。如上图所示，在vert.x中event-loop线程不断地轮询，当获取到新的事件时会交由handler去处理。因此像官网所说的一样，永远不要去阻塞该线程。比如不能写一些同步的网络请求、次数很多的循环、同步的jdbc查询等等，一般地存内存操作地代码是不需要特别处理的。由于event-loop线程决定我们不能使用同步的api，因此vert.x给我们提供了很多开箱即用的异步client:MongoDB client、HttpClient、JDBCClient等，后面的示例工程中会详细介绍部分client的使用。
+
+## Worker线程
+
+上面说到event-loop线程不能被阻塞，但是实际情况中我们总会去调一些同步的api，比如做一些耗时很大的加解密，这时候就可以使用Worker线程了,vert.x给我们提供了executeBlocking方法,executeBlocking方法内可以做一些耗时操作而不会收到上面那样的警告：
+
+```java
+vertx.executeBlocking(future -> {
+  // Call some blocking API that takes a significant amount of time to return
+  String result = someAPI.blockingMethod("hello");
+  future.complete(result);
+}, res -> {
+  System.out.println("The result is: " + res.result());
+});
+```
+
+关于线程模型就介绍到这里，后面会介绍编程方法。
