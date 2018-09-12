@@ -40,7 +40,7 @@ May 11, 2018 9:54:57 PM io.vertx.core.impl.BlockedThreadChecker
 WARNING: Thread Thread[vert.x-eventloop-thread-0,5,main] has been blocked for 2272 ms, time limit is 2000
 vert.x-eventloop-thread-0
 vert.x-eventloop-thread-0
-May 11, 2018 9:55:03 PM io.vertx.core.impl.BlockedThreadChecker
+May 11, 2018 9:55:04 PM io.vertx.core.impl.BlockedThreadChecker
 WARNING: Thread Thread[vert.x-eventloop-thread-0,5,main] has been blocked for 2262 ms, time limit is 2000
 vert.x-eventloop-thread-0
 vert.x-eventloop-thread-0
