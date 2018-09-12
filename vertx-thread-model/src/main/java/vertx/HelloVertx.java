@@ -9,7 +9,7 @@ public class HelloVertx extends AbstractVerticle {
         vertx.createHttpServer().requestHandler(req -> {
             try {
                 //模拟业务代码，需要处理一定时间
-                Thread.sleep(500);
+                Thread.sleep(2500);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
