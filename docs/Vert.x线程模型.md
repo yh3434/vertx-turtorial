@@ -32,7 +32,7 @@ public class HelloVertx extends AbstractVerticle {
 }
 ```
 
-点击main函数启动后，打开浏览器输入：http://localhost:8080，我们可以看到当sleep超过2000ms时，控制台开始有下面的警告输出：
+点击main函数启动后，打开浏览器输入：http://localhost:8080 ，我们可以看到当sleep超过2000ms时，控制台开始有下面的警告输出：
 
 ```shell
 vert.x-eventloop-thread-0
