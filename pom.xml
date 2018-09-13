@@ -11,6 +11,7 @@
     <modules>
         <module>vertx-hello</module>
         <module>vertx-thread-model</module>
+        <module>vertx-future</module>
     </modules>
 
     <properties>
