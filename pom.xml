@@ -16,13 +16,14 @@
 
     <properties>
         <kotlin.version>1.2.61</kotlin.version>
+        <vertx.version>3.5.3</vertx.version>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>io.vertx</groupId>
             <artifactId>vertx-core</artifactId>
-            <version>3.5.3</version>
+            <version>${vertx.version}</version>
         </dependency>
         <dependency>
             <groupId>org.jetbrains.kotlin</groupId>

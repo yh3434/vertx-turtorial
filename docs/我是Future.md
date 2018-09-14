@@ -10,3 +10,84 @@
 
 需求：
 
+1. 创建一张表，有id、name两个字段。
+2. 按顺序插入id从1到3的数据。
+3. 再按顺序查询出id从1到3的数据。
+
+于是乎写出来的代码就成了这样，截取一部分操作数据库的代码：
+
+```java
+client.getConnection(conn -> {
+            if (conn.failed()) {
+                System.err.println(conn.cause().getMessage());
+                return;
+            }
+
+            final SQLConnection connection = conn.result();
+            connection.execute("create table test(id int primary key, name varchar(255))", res -> {
+                if (res.failed()) {
+                    throw new RuntimeException(res.cause());
+                }
+                // insert some test data
+                connection.execute("insert into test values(1, 'Hello')", insert -> {
+                    connection.execute("insert into test values(2, 'Hello')", insert2 -> {
+                        connection.execute("insert into test values(3, 'Hello')", insert3 -> {
+                            // query some data
+                            connection.query("select * from test where id = 1", rs -> {
+                                for (JsonArray line : rs.result().getResults()) {
+                                    System.out.println(line.encode());
+                                }
+                                connection.query("select * from test where id = 2", rs2 -> {
+                                    for (JsonArray line : rs2.result().getResults()) {
+                                        System.out.println(line.encode());
+                                    }
+                                    connection.query("select * from test where id = 3", rs3 -> {
+                                        for (JsonArray line : rs3.result().getResults()) {
+                                            System.out.println(line.encode());
+                                        }
+                                        // and close the connection
+                                        connection.close(done -> {
+                                            if (done.failed()) {
+                                                throw new RuntimeException(done.cause());
+                                            }
+                                        });
+                                    });
+                                });
+                            });
+                        });
+                    });
+                });
+            });
+        });
+```
+
+
+
+这样的编程体验是灾难且不可控的，我们在享受异步编程带来的高效的同时必须要解决这种回调的,Vert.x给我们提供了自己的Monad，就是之前提到的Future。
+
+现在我们用Future来改造上面的回调地狱，源码请看上面地址：
+
+```java
+Future<SQLConnection> connFuture = Future.future(future -> client.getConnection(future));
+//创建表
+Future<Void> createTableFuture = connFuture.compose(conn -> Future.future(future -> conn.execute("create table test(id int primary key, name varchar(255))", future)));
+//按顺序插入id为1、2、3的数据
+Future<Void> insertFuture1 = createTableFuture.compose(v -> Future.future(future -> connFuture.result().execute("insert into test values(1, 'Hello')", future)));
+Future<Void> insertFuture2 = insertFuture1.compose(v -> Future.future(future -> connFuture.result().execute("insert into test values(2, 'Hello')", future)));
+Future<Void> insertFuture3 = insertFuture2.compose(v -> Future.future(future -> connFuture.result().execute("insert into test values(3, 'Hello')", future)));
+Future<ResultSet> queryFuture1 = insertFuture3.compose(v -> Future.future(future -> connFuture.result().query("select * from test where id = 1", future)));
+Future<ResultSet> queryFuture2 = queryFuture1.compose(v -> Future.future(future -> connFuture.result().query("select * from test where id = 2", future)));
+Future<ResultSet> queryFuture3 = queryFuture2.compose(v -> Future.future(future -> connFuture.result().query("select * from test where id = 3", future)));
+queryFuture3.setHandler(res -> {
+    if (res.failed())
+throw new RuntimeException(res.cause());
+    //id为1的结果
+    System.out.println(queryFuture1.result().getResults());
+    //id为2的结果
+    System.out.println(queryFuture2.result().getResults());
+    //id为4的结果
+    System.out.println(res.result().getResults());
+});
+```
+
+可以看到同样的结果，我们用了赏心悦目的实现，告别了回调地狱，这就是函数式编程的魅力。有了这个法宝我们就能写出高效且舒服的异步代码。后面我们会实现kotlin的协程版的改造，阅读性比Future这种还要高一点。
