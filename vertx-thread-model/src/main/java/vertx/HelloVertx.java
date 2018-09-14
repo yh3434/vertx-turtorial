@@ -5,6 +5,7 @@ import io.vertx.core.Vertx;
 
 public class HelloVertx extends AbstractVerticle {
 
+    @Override
     public void start() {
         vertx.createHttpServer().requestHandler(req -> {
             try {
