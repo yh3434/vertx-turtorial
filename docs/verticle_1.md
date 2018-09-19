@@ -28,7 +28,7 @@
 * 模拟管理系统，可以随时查看、添加库存。
 * 提供测试类：每2秒模拟增加两个库存，每1秒10个用户同时去抢购商品。
 
-结构如下图，源码请点击链接获取：
+结构如下图，源码请点击[链接](../vertx-verticle-study)获取：
 
 ![source](https://ws2.sinaimg.cn/large/006tNbRwgy1fven27qb7fj30em0eygmr.jpg)
 
