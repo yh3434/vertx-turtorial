@@ -13,6 +13,7 @@
     <module>vertx-thread-model</module>
     <module>vertx-future</module>
     <module>vertx-verticle-study</module>
+      <module>vertx-gateway</module>
   </modules>
 
   <properties>
