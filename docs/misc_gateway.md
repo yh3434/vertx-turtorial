@@ -1,4 +1,4 @@
-# 微服务之网关的实现
+# 微服务
 
 在上一篇的简答的秒杀系统中我们已经实现了一个简单的微服务，但是细细思考一下是有很多问题的。
 
@@ -131,4 +131,20 @@ INFO: all verticle deployed and project started!--with single!
 
 ![post](https://ws3.sinaimg.cn/large/006tNbRwgy1fvmnr0dt0hj31kw10pgpm.jpg)
 
-到这里我们的网关就编码完成了，并且模拟了一个简单的TEST服务。
+我们的网关就编码完成了，并且模拟了一个简单的TEST服务。
+
+## kotlin CoroutineVerticle
+
+在之前我们已经看到过由回调过度到future的写法，我们先用之前的例子简单的分写两个servie，一个是“回调地狱”写的[服务](../vertx-gateway/src/main/java/com/dayan/vertx/CALL_BACK_HELL_VERTICLE.java)，一个是future模式的[服务](../vertx-gateway/src/main/java/com/dayan/vertx/FUTURE_VERTICLE.java)。启动后和上面TEST_VERTICLE一样测试一下，可以见到结果，这里省略请求过程，请查看源码。
+
+现在我们用koltin的协程写一个服务，源码点击[查看](../vertx-gateway/src/main/kotlin/com/dayan/vertx/COROUTINE_VERTICLE.kt)
+
+![coroutine](https://ws2.sinaimg.cn/large/006tNbRwgy1fw006r4gaqj31kw0x3nin.jpg)
+
+纵向比较一下，我们看到协程和vert.x异步编程的完美结合：
+
+* 可读性强
+* 回到同步模式写代码，编码友好
+* 由于是用户态线程，不存在阻塞的问题
+
+到这里我们已经完整的实现了网关和三种不同编码方式的服务。

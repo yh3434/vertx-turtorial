@@ -90,7 +90,7 @@ public class APIGatewayVerticle extends AbstractVerticle {
         options.setSendTimeout(5000);
         eventBus.<JsonObject>send(method, requestBody.getJsonObject("params"), options, reply -> {
             if (reply.failed()) {
-                reply.cause().printStackTrace();
+                log.error(reply.cause());
                 badJsonRequest(routingContext);
             } else {
                 successJsonRequest(routingContext, reply.result().body());
